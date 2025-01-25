@@ -236,8 +236,8 @@ void DreamConn::connect()
 			std::string serial_device = "";
 			
 			// use user-configured serial device if available, fallback to first available
-			if (cfgLoadStr("input", "MapleSerialDevice", "default") != "default") {
-				serial_device = cfgLoadStr("input", "MapleSerialDevice", "default");
+			if (cfgLoadStr("input", "DreamcastControllerUsbSerialDevice", "default") != "default") {
+				serial_device = cfgLoadStr("input", "DreamcastControllerUsbSerialDevice", "default");
 				INFO_LOG(INPUT, "DreamcastController[%d] connecting to user-configured serial device: %s", bus, serial_device.c_str());
 			}
 			else
