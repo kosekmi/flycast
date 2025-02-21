@@ -679,7 +679,7 @@ public:
 
 	void onConnectComplete() override {
 		// Timeout is extended to 5 seconds for all other communication after connection
-		timeout_ms = std::chrono::seconds(5);
+		timeout_ms = std::chrono::seconds(10);
 	}
 
 	void disconnect() override {
