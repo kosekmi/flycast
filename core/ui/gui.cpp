@@ -208,7 +208,7 @@ void gui_initFonts()
 
     // Setup Dear ImGui style
 	ImGui::GetStyle() = ImGuiStyle{};
-    ImGui::StyleColorsDark();
+    ImGui::StyleColorsLight();
     ImGui::GetStyle().TabRounding = 0;
     ImGui::GetStyle().ItemSpacing = ImVec2(8, 8);		// from 8,4
     ImGui::GetStyle().ItemInnerSpacing = ImVec2(4, 6);	// from 4,4
@@ -3155,6 +3155,7 @@ inline static void gui_display_demo()
 
 static void gameTooltip(const std::string& tip)
 {
+    /*
     if (ImGui::IsItemHovered())
     {
         ImGui::BeginTooltip();
@@ -3163,6 +3164,7 @@ static void gameTooltip(const std::string& tip)
         ImGui::PopTextWrapPos();
         ImGui::EndTooltip();
     }
+    */
 }
 
 static bool gameImageButton(ImguiTexture& texture, const std::string& tooltip, ImVec2 size, const std::string& gameName)
@@ -3222,15 +3224,15 @@ static void gui_display_content()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ScaledVec2(20, 8));
     ImGui::AlignTextToFramePadding();
     ImGui::Indent(uiScaled(10));
-    ImGui::Text("GAMES");
+    ImGui::Text("");
     ImGui::Unindent(uiScaled(10));
 
     static ImGuiTextFilter filter;
     const float settingsBtnW = iconButtonWidth(ICON_FA_GEAR, "Settings");
 #if !defined(__ANDROID__) && !defined(TARGET_IPHONE) && !defined(TARGET_UWP) && !defined(__SWITCH__)
 	ImGui::SameLine(0, uiScaled(32));
-	filter.Draw("Filter", ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x - uiScaled(32)
-			- settingsBtnW - ImGui::GetStyle().ItemSpacing.x);
+	//filter.Draw("Filter", ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x - uiScaled(32)
+			//- settingsBtnW - ImGui::GetStyle().ItemSpacing.x);
 #endif
     if (gui_state != GuiState::SelectDisk)
     {
