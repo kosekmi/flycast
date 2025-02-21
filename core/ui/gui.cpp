@@ -3211,7 +3211,9 @@ void gui_load_game()
 
 static void gui_display_content()
 {
-	fullScreenWindow(false);
+    SDL_ShowCursor(SDL_DISABLE);
+    
+	fullScreenWindow(true);
 	ImguiStyleVar _(ImGuiStyleVar_WindowRounding, 0);
 	ImguiStyleVar _1(ImGuiStyleVar_WindowBorderSize, 0);
 
