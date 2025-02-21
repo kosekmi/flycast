@@ -3674,7 +3674,7 @@ void gui_draw_osd()
 	ImGui::NewFrame();
 
 #ifdef USE_RACHIEVEMENTS
-	if (!achievements::notifier.draw())
+	//if (!achievements::notifier.draw())
 #endif
 		if (!toast.draw())
 		{
