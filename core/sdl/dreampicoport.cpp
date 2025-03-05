@@ -659,8 +659,8 @@ void DreamPicoPort::connect() {
         return;
     }
 
-    // Timeout is extended to 5 seconds for all other communication after connection
-    timeout_ms = std::chrono::seconds(5);
+    // Timeout is extended to 10 seconds for all other communication after connection
+    timeout_ms = std::chrono::seconds(10);
 
 	expansionDevs = msg.originAP & 0x1f;
 
