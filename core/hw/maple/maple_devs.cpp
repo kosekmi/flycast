@@ -12,7 +12,6 @@
 #include <cerrno>
 #include <ctime>
 #include <thread>
-#include "ui/gui.h"
 
 const char* maple_sega_controller_name = "Dreamcast Controller";
 const char* maple_sega_vmu_name        = "Visual Memory";
@@ -2179,7 +2178,7 @@ struct DreamLinkVmu : public maple_sega_vmu
 			// Skip virtual save when using physical VMU
 			//DEBUG_LOG(MAPLE, "Not saving because this is a real vmu");
 			NOTICE_LOG(MAPLE, "Saving to physical VMU");
-			os_notify("NOTE: YOU ARE SAVING TO A PHYSICAL VMU", 6000);
+			os_notify("ATTENTION: You are saving to a physical VMU, Do not unplug the VMU while saving or close the game", 6000);
 			return true;
 		}
 		else
@@ -2221,9 +2220,9 @@ struct DreamLinkVmu : public maple_sega_vmu
 							//Block, Phase, write_adr, write_len);
 
 						dreamlink->send(*msg);
-						os_notify("NOTE: YOU ARE SAVING TO A PHYSICAL VMU", 6000);
+						os_notify("ATTENTION: You are saving to a physical VMU, Do not unplug the VMU while saving or close the game", 6000);
 
-						std::this_thread::sleep_for(std::chrono::milliseconds(50));
+						std::this_thread::sleep_for(std::chrono::milliseconds(40));
 						break;
 					}
 
