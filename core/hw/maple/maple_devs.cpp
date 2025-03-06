@@ -12,6 +12,7 @@
 #include <cerrno>
 #include <ctime>
 #include <thread>
+#include "ui/gui.h"
 
 const char* maple_sega_controller_name = "Dreamcast Controller";
 const char* maple_sega_vmu_name        = "Visual Memory";
@@ -2116,7 +2117,7 @@ struct DreamLinkVmu : public maple_sega_vmu
 {
 	std::shared_ptr<DreamLink> dreamlink;
 	bool useRealVmu;  // Set this to true to use physical VMU, false for virtual
-	bool readIn = true;
+	bool isRead = false;
 
 	DreamLinkVmu(std::shared_ptr<DreamLink> dreamlink) : dreamlink(dreamlink) {
 		// Initialize useRealVmu with our config setting
@@ -2128,42 +2129,46 @@ struct DreamLinkVmu : public maple_sega_vmu
 		// Update useRealVmu in case config changed
 		useRealVmu = config::UsePhysicalVmuOnly;
 
-		if (readIn)
+		if (useRealVmu)
 		{
-			memset(flash_data, 0, sizeof(flash_data));
-			memset(lcd_data, 0, sizeof(lcd_data));
+			if (!isRead)
+			{
+				memset(flash_data, 0, sizeof(flash_data));
+				memset(lcd_data, 0, sizeof(lcd_data));
 
-			readIn = false;
-			for (u32 block = 0; block < 256; ++block) {
-				// Try up to 2 times to read
-				for (u32 i = 0; i < 2; ++i) {
-					MapleMsg msg;
-					msg.command = 0x0B;
-					msg.destAP = 1; // TODO: fix for port number
-					msg.originAP = 0; // TODO: fix for DreamLink (not needed for DreamPort)
-					msg.size = 2;
-					msg.data[0] = 0;
-					msg.data[1] = 0;
-					msg.data[2] = 0;
-					msg.data[3] = 0x02;
-					msg.data[4] = 0;
-					msg.data[5] = 0;
-					msg.data[6] = 0;
-					msg.data[7] = block;
+				isRead = true;
+				for (u32 block = 0; block < 256; ++block) {
+					// Try up to 2 times to read
+					for (u32 i = 0; i < 2; ++i) {
+						MapleMsg msg;
+						msg.command = 0x0B;
+						msg.destAP = 1; // TODO: fix for port number
+						msg.originAP = 0; // TODO: fix for DreamLink (not needed for DreamPort)
+						msg.size = 2;
+						msg.data[0] = 0;
+						msg.data[1] = 0;
+						msg.data[2] = 0;
+						msg.data[3] = 0x02;
+						msg.data[4] = 0;
+						msg.data[5] = 0;
+						msg.data[6] = 0;
+						msg.data[7] = block;
 
-					dreamlink->send(msg);
+						dreamlink->send(msg);
 
-					if (dreamlink->receive(msg) && msg.size == 130) {
-						// Something read!
-						memcpy(&flash_data[block * 512], &msg.data[8], 4 * 128);
-						break;
+						if (dreamlink->receive(msg) && msg.size == 130) {
+							// Something read!
+							memcpy(&flash_data[block * 512], &msg.data[8], 4 * 128);
+							break;
+						}
 					}
 				}
 			}
 		}
 		else
 		{
-			memset(lcd_data, 0, sizeof(lcd_data));
+			maple_sega_vmu::OnSetup();
+			isRead = false;
 		}
 	}
 
@@ -2173,6 +2178,8 @@ struct DreamLinkVmu : public maple_sega_vmu
 		{
 			// Skip virtual save when using physical VMU
 			//DEBUG_LOG(MAPLE, "Not saving because this is a real vmu");
+			NOTICE_LOG(MAPLE, "Saving to physical VMU");
+			os_notify("NOTE: YOU ARE SAVING TO A PHYSICAL VMU", 6000);
 			return true;
 		}
 		else
@@ -2183,23 +2190,18 @@ struct DreamLinkVmu : public maple_sega_vmu
 
 	u32 dma(u32 cmd) override
 	{
-		if (useRealVmu)
+		// Physical VMU logic
+		if (dma_count_in >= 4)
 		{
-			// Physical VMU logic
-			if (dma_count_in >= 4)
-			{
-				const u32 functionId = *(u32*)dma_buffer_in;
-				const MapleMsg* msg = reinterpret_cast<const MapleMsg*>(dma_buffer_in - 4);
+			const u32 functionId = *(u32*)dma_buffer_in;
+			const MapleMsg* msg = reinterpret_cast<const MapleMsg*>(dma_buffer_in - 4);
 
-				if (functionId == MFID_1_Storage)
+			if (functionId == MFID_1_Storage)
+			{
+				if (useRealVmu)
 				{
 					switch (cmd)
 					{
-					case MDCF_GetMediaInfo:
-						//DEBUG_LOG(MAPLE, "VMU GetMediaInfo request");
-						dreamlink->send(*msg);
-						break;
-
 					case MDCF_GetLastError:
 						//NOTICE_LOG(MAPLE, "VMU GetLastError request");
 						dreamlink->send(*msg);
@@ -2219,25 +2221,29 @@ struct DreamLinkVmu : public maple_sega_vmu
 							//Block, Phase, write_adr, write_len);
 
 						dreamlink->send(*msg);
+						os_notify("NOTE: YOU ARE SAVING TO A PHYSICAL VMU", 6000);
 
 						std::this_thread::sleep_for(std::chrono::milliseconds(50));
 						break;
 					}
 
 					case MDCF_BlockRead:
-						break; // do nothing
-
 					default:
-						//DEBUG_LOG(MAPLE, "VMU Storage cmd %02x", cmd);
-						dreamlink->send(*msg);
+						// do nothing
 						break;
 					}
 				}
-				else if (cmd == MDCF_BlockWrite && functionId == MFID_2_LCD)
+			}
+			else if (functionId == MFID_2_LCD)
+			{
+				if (cmd == MDCF_BlockWrite)
 				{
 					dreamlink->send(*msg);
 				}
-				else if (cmd == MDCF_SetCondition && functionId == MFID_3_Clock)
+			}
+			else if (functionId == MFID_3_Clock)
+			{
+				if (cmd == MDCF_SetCondition)
 				{
 					dreamlink->send(*msg);
 				}
