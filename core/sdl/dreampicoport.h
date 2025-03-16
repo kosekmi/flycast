@@ -26,6 +26,8 @@
 
 #include <atomic>
 #include <chrono>
+#include <vector>
+#include <array>
 
 // Forward declaration of underlying serial connection
 class DreamPicoPortSerialHandler;
@@ -51,6 +53,10 @@ class DreamPicoPort : public DreamLink
 	bool is_hardware_bus_implied = true;
 	//! True once connection is established
 	bool connection_established = false;
+    //! The queried interface version
+    double interface_version = 0.0;
+    //! The queried peripherals; for each function, index 0 is function code and index 1 is the function definition
+    std::vector<std::vector<std::array<uint32_t, 2>>> peripherals;
 
 public:
     //! Dreamcast Controller USB VID:1209 PID:2f07
@@ -65,25 +71,27 @@ public:
 
 	bool send(const MapleMsg& msg) override;
 
-    virtual bool receive(MapleMsg& msg) override;
+    bool send(const MapleMsg& txMsg, MapleMsg& rxMsg) override;
 
-	virtual inline void gameTermination() override;
+	void gameTermination() override;
 
-	virtual int getBus() const override;
+	int getBus() const override;
 
-	virtual bool hasVmu() const override;
+    u32 getFunctionCode(int forPort) const override;
 
-	virtual bool hasRumble() const override;
+	bool hasVmu() const override;
 
-	virtual int getDefaultBus() const override;
+	bool hasRumble() const override;
 
-	virtual void changeBus(int newBus);
+	int getDefaultBus() const override;
 
-	virtual std::string getName() const override;
+	void changeBus(int newBus);
 
-	virtual void connect() override;
+	std::string getName() const override;
 
-	virtual void disconnect() override;
+	void connect() override;
+
+	void disconnect() override;
 
     void sendPort();
 
@@ -99,6 +107,8 @@ private:
     asio::error_code receiveCmd(std::string& cmd);
     asio::error_code receiveMsg(MapleMsg& msg);
 	void determineHardwareBus(int joystick_idx, SDL_Joystick* sdl_joystick);
+    bool queryInterfaceVersion();
+    bool queryPeripherals();
 };
 
 #endif // USE_DREAMCASTCONTROLLER
