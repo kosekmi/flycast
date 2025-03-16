@@ -2215,8 +2215,8 @@ struct DreamLinkVmu : public maple_sega_vmu
 						(currentTime - lastErrorNotifyTime) > 4000)
 					{
 						// This is a read operation (loading)
-						os_notify("ATTENTION: Loading from a physical VMU", 6000,
-								"Game data is being loaded from your physical VMU");
+						/*os_notify("ATTENTION: Loading from a physical VMU", 6000,
+								"Game data is being loaded from your physical VMU");*/
 						lastNotifyTime = currentTime;
 					}
 
@@ -2383,8 +2383,8 @@ private:
 			if ((currentTime - lastNotifyTime) > 4000 && (currentTime - lastErrorNotifyTime) > 4000)
 			{
 				// This is a write operation (saving)
-				os_notify("ATTENTION: You are saving to a physical VMU", 6000,
-						"Do not disconnect the VMU or close the game");
+				/*os_notify("ATTENTION: You are saving to a physical VMU", 6000,
+						"Do not disconnect the VMU or close the game");<*/
 				lastNotifyTime = currentTime;
 			}
 
