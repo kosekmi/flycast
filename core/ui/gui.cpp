@@ -3550,13 +3550,13 @@ static void gui_display_loadscreen()
 				ImGui::Text("%s", label);
 				{
 					ImguiStyleColor _(ImGuiCol_PlotHistogram, ImVec4(0.557f, 0.268f, 0.965f, 1.f));
-					ImGui::ProgressBar(gameLoader.getProgress().progress, ImVec2(-1, uiScaled(20.f)), "");
+					//ImGui::ProgressBar(gameLoader.getProgress().progress, ImVec2(-1, uiScaled(20.f)), "");
 				}
 
 				float currentwidth = ImGui::GetContentRegionAvail().x;
 				ImGui::SetCursorPosX((currentwidth - uiScaled(100.f)) / 2.f + ImGui::GetStyle().WindowPadding.x);
-				if (ImGui::Button("Cancel", ScaledVec2(100.f, 0)))
-					gameLoader.cancel();
+				/*if (ImGui::Button("Cancel", ScaledVec2(100.f, 0)))
+					gameLoader.cancel();*/
 			}
 		} catch (const FlycastException& ex) {
 			ERROR_LOG(BOOT, "%s", ex.what());
