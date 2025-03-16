@@ -3511,10 +3511,10 @@ static void gui_network_start()
 
 static void gui_display_loadscreen()
 {
-	drawBoxartBackground();
+	//drawBoxartBackground();
 	centerNextWindow();
-	ImGui::SetNextWindowSize(ScaledVec2(330, 0));
-	ImGui::SetNextWindowBgAlpha(0.8f);
+    ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+	ImGui::SetNextWindowBgAlpha(0.76f);
 	ImguiStyleVar _(ImGuiStyleVar_WindowPadding, ScaledVec2(20, 20));
 
     if (ImGui::Begin("##loading", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
@@ -3527,9 +3527,9 @@ static void gui_display_loadscreen()
 			if (label == nullptr)
 			{
 				if (gameLoader.ready())
-					label = "Starting...";
+					label = "";
 				else
-					label = "Loading...";
+					label = "";
 			}
 
 			if (gameLoader.ready())

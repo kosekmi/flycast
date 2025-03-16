@@ -673,7 +673,7 @@ void Emulator::loadGame(const char *path, LoadProgress *progress)
 				progress->label = "Waiting for debugger...";
 			else
 #endif
-				progress->label = "Starting...";
+				progress->label = "";
 		}
 
 		state = Loaded;
