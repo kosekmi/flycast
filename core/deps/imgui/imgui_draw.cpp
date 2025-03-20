@@ -307,7 +307,7 @@ void ImGui::StyleColorsLight(ImGuiStyle* dst)
     colors[ImGuiCol_Border]                 = ImVec4(0.996f, 0.996f, 0.996f, 1.00f);
     colors[ImGuiCol_BorderShadow]           = ImVec4(0.996f, 0.996f, 0.996f, 1.00f);
     colors[ImGuiCol_FrameBg]                = ImVec4(0.8f, 0.8f, 0.8f, 1.00f);
-    colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);
+    colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.26f, 0.59f, 0.98f, 0.70f);
     colors[ImGuiCol_FrameBgActive]          = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
     colors[ImGuiCol_TitleBg]                = ImVec4(0.996f, 0.996f, 0.996f, 1.00f);
     colors[ImGuiCol_TitleBgActive]          = ImVec4(0.82f, 0.82f, 0.82f, 1.00f);
