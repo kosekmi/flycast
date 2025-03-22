@@ -25,6 +25,9 @@
 #include "hw/bba/bba.h"
 #include "cfg/option.h"
 #include "stdclass.h"
+#ifndef LIBRETRO
+#include "cfg/cfg.h"
+#endif
 
 #include <thread>
 #include <memory>
@@ -105,28 +108,24 @@ private:
 	{
 		if (sending)
 			return;
-		if ((sendBufSize > 1 && sendBuffer[sendBufSize - 1] == 0x7e)
-				|| sendBufSize == sendBuffer.size())
-		{
-			pppdump(sendBuffer.data(), sendBufSize, true);
-			sending = true;
-			asio::async_write(socket, asio::buffer(sendBuffer, sendBufSize),
-				[this](const std::error_code& ec, size_t len)
+		pppdump(sendBuffer.data(), sendBufSize, true);
+		sending = true;
+		asio::async_write(socket, asio::buffer(sendBuffer, sendBufSize),
+			[this](const std::error_code& ec, size_t len)
+			{
+				if (ec)
 				{
-					if (ec)
-					{
-						ERROR_LOG(NETWORK, "Send error: %s", ec.message().c_str());
-						close();
-						return;
-					}
-					sending = false;
-					sendBufSize -= len;
-					if (sendBufSize > 0) {
-						memmove(&sendBuffer[0], &sendBuffer[len], sendBufSize);
-						doSend();
-					}
-				});
-		}
+					ERROR_LOG(NETWORK, "Send error: %s", ec.message().c_str());
+					close();
+					return;
+				}
+				sending = false;
+				sendBufSize -= len;
+				if (sendBufSize > 0) {
+					memmove(&sendBuffer[0], &sendBuffer[len], sendBufSize);
+					doSend();
+				}
+			});
 	}
 
 	void close() {
@@ -481,17 +480,24 @@ void DCNetThread::run()
 			port = "7655";
 		else
 			port = "7654";
+		std::string hostname = "dcnet.flyca.st";
+#ifndef LIBRETRO
+		hostname = cfgLoadStr("network", "DCNetServer", hostname);
+#endif
 		asio::ip::tcp::resolver resolver(*io_context);
 		asio::error_code ec;
-		auto it = resolver.resolve("dcnet.flyca.st", port, ec);
+		auto it = resolver.resolve(hostname, port, ec);
 		if (ec)
 			throw FlycastException(ec.message());
 		asio::ip::tcp::endpoint endpoint = *it.begin();
 
-		if (config::EmulateBBA)
+		if (config::EmulateBBA) {
 			ethSocket = std::make_unique<EthSocket>(*io_context, endpoint);
-		else
+		}
+		else {
+			toModem.clear();
 			pppSocket = std::make_unique<PPPTcpSocket>(*io_context, endpoint);
+		}
 		io_context->run();
 	} catch (const FlycastException& e) {
 		ERROR_LOG(NETWORK, "DCNet connection error: %s", e.what());
