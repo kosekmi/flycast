@@ -211,7 +211,7 @@ void gui_initFonts()
 
     // Setup Dear ImGui style
 	ImGui::GetStyle() = ImGuiStyle{};
-    ImGui::StyleColorsDark();
+    ImGui::StyleColorsLight();
     ImGui::GetStyle().TabRounding = 5.0f;
     ImGui::GetStyle().FrameRounding = 3.0f;
     ImGui::GetStyle().ItemSpacing = ImVec2(8, 8);		// from 8,4
