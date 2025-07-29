@@ -888,6 +888,7 @@ inline static void gui_display_demo() {
 
 static void gameTooltip(const std::string& tip)
 {
+    /*
     if (ImGui::IsItemHovered())
     {
         ImGui::BeginTooltip();
@@ -896,6 +897,7 @@ static void gameTooltip(const std::string& tip)
         ImGui::PopTextWrapPos();
         ImGui::EndTooltip();
     }
+     */
 }
 
 static bool gameImageButton(ImguiTexture& texture, const std::string& tooltip, ImVec2 size, const std::string& gameName)
@@ -955,15 +957,15 @@ static void gui_display_content()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ScaledVec2(20, 8));
     ImGui::AlignTextToFramePadding();
     ImGui::Indent(uiScaled(10));
-    ImGui::Text("GAMES");
+    ImGui::Text("");
     ImGui::Unindent(uiScaled(10));
 
     static ImGuiTextFilter filter;
     const float settingsBtnW = iconButtonWidth(ICON_FA_GEAR, "Settings");
 #if !defined(__ANDROID__) && !defined(TARGET_IPHONE) && !defined(TARGET_UWP) && !defined(__SWITCH__)
 	ImGui::SameLine(0, uiScaled(32));
-	filter.Draw("Filter", ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x - uiScaled(32)
-			- settingsBtnW - ImGui::GetStyle().ItemSpacing.x);
+	/*filter.Draw("Filter", ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x - uiScaled(32)
+			- settingsBtnW - ImGui::GetStyle().ItemSpacing.x);*/
 #endif
     if (gui_state != GuiState::SelectDisk)
     {
@@ -1241,10 +1243,10 @@ static void gui_network_start()
 
 static void gui_display_loadscreen()
 {
-	drawBoxartBackground();
+	//drawBoxartBackground();
 	centerNextWindow();
-	ImGui::SetNextWindowSize(ScaledVec2(330, 0));
-	ImGui::SetNextWindowBgAlpha(0.8f);
+    ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+	ImGui::SetNextWindowBgAlpha(1.0f);
 	ImguiStyleVar _(ImGuiStyleVar_WindowPadding, ScaledVec2(20, 20));
 
     if (ImGui::Begin("##loading", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize))
@@ -1257,9 +1259,9 @@ static void gui_display_loadscreen()
 			if (label == nullptr)
 			{
 				if (gameLoader.ready())
-					label = "Starting...";
+					label = "";
 				else
-					label = "Loading...";
+					label = "";
 			}
 
 			if (gameLoader.ready())
@@ -1280,13 +1282,13 @@ static void gui_display_loadscreen()
 				ImGui::Text("%s", label);
 				{
 					ImguiStyleColor _(ImGuiCol_PlotHistogram, ImVec4(0.557f, 0.268f, 0.965f, 1.f));
-					ImGui::ProgressBar(gameLoader.getProgress().progress, ImVec2(-1, uiScaled(20.f)), "");
+					//ImGui::ProgressBar(gameLoader.getProgress().progress, ImVec2(-1, uiScaled(20.f)), "");
 				}
 
 				float currentwidth = ImGui::GetContentRegionAvail().x;
 				ImGui::SetCursorPosX((currentwidth - uiScaled(100.f)) / 2.f + ImGui::GetStyle().WindowPadding.x);
-				if (ImGui::Button("Cancel", ScaledVec2(100.f, 0)))
-					gameLoader.cancel();
+				/*if (ImGui::Button("Cancel", ScaledVec2(100.f, 0)))
+					gameLoader.cancel();*/
 			}
 		} catch (const FlycastException& ex) {
 			ERROR_LOG(BOOT, "%s", ex.what());
