@@ -1407,7 +1407,7 @@ ImGuiStyle::ImGuiStyle()
     TouchExtraPadding           = ImVec2(0,0);      // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
     IndentSpacing               = 21.0f;            // Horizontal spacing when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
     ColumnsMinSpacing           = 6.0f;             // Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
-    ScrollbarSize               = 14.0f;            // Width of the vertical scrollbar, Height of the horizontal scrollbar
+    ScrollbarSize               = 0.0f;             // Width of the vertical scrollbar, Height of the horizontal scrollbar
     ScrollbarRounding           = 9.0f;             // Radius of grab corners rounding for scrollbar
     GrabMinSize                 = 12.0f;            // Minimum width/height of a grab box for slider/scrollbar
     GrabRounding                = 0.0f;             // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
